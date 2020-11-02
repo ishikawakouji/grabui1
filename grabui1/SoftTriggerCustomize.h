@@ -12,35 +12,20 @@ private:
 	// 最大バッファ数
 	const int iMaxNumBuffer = 10;
 
-	// 色補正
-	// レイマック 面LED 80%  2020.9.30
-	const double BGRLight_Rate = 0.75;
-	const double BGRLight_BRate = 0.8;
-	const double BGRLight_GRate = 1.0;
-	const double BGRLight_RRate = 0.75;
-	const double BLight_B = 223 * BGRLight_BRate * BGRLight_Rate;
-	const double BLight_G = 70 * BGRLight_BRate * BGRLight_Rate;
-	const double BLight_R = 10 * BGRLight_BRate * BGRLight_Rate;
-	const double GLight_B = 68 * BGRLight_GRate * BGRLight_Rate;
-	const double GLight_G = 247 * BGRLight_GRate * BGRLight_Rate;
-	const double GLight_R = 20 * BGRLight_GRate * BGRLight_Rate;
-	const double RLight_B = 5 * BGRLight_RRate * BGRLight_Rate;
-	const double RLight_G = 49 * BGRLight_RRate * BGRLight_Rate;
-	const double RLight_R = 170 * BGRLight_RRate * BGRLight_Rate;
-#if 0
-	// レイマックLED 100% 高さ25mm
-	const double BLight_B = 223.;
-	const double BLight_G = 70.;
-	const double BLight_R = 10.;
-	const double GLight_B = 68.;
-	const double GLight_G = 247.;
-	const double GLight_R = 20.;
-	const double RLight_B = 5.;
-	const double RLight_G = 49.;
-	const double RLight_R = 170.;
-
-#endif
-
+	// 色補正 11/2修正
+	const double BGRLight_Rate = 0.7298;  // 255 / (BLight_G * BLight_Rate + GLight_G * GLight_Rate + RLight_G * RLight_Rate)
+	const double BLight_Rate = 0.8;
+	const double GLight_Rate = 1.0;
+	const double RLight_Rate = 0.8;
+	const double BLight_B = 211 * BLight_Rate * BGRLight_Rate;
+	const double BLight_G = 75 * BLight_Rate * BGRLight_Rate;
+	const double BLight_R = 5 * BLight_Rate * BGRLight_Rate;
+	const double GLight_B = 57 * GLight_Rate * BGRLight_Rate;
+	const double GLight_G = 243 * GLight_Rate * BGRLight_Rate;
+	const double GLight_R = 15 * GLight_Rate * BGRLight_Rate;
+	const double RLight_B = 5 * RLight_Rate * BGRLight_Rate;
+	const double RLight_G = 58 * RLight_Rate * BGRLight_Rate;
+	const double RLight_R = 204 * RLight_Rate * BGRLight_Rate;
 
 public:
 	//static 
