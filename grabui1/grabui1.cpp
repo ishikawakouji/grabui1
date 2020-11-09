@@ -254,7 +254,9 @@ int main()
             ImGui::Checkbox(u8"撮影", &flagCamera);
             ImGui::Checkbox(u8"保存", &flagSave);
 
-            if (ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Space))) {
+            // 正確にチェックボックスに入れなくても保存する
+            if (ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Space)) // space key
+                || ImGui::IsMouseReleased(ImGuiMouseButton_Right)) { // mouse right button
                 //Beep(500, 500);
                 flagSave = true;
             }
