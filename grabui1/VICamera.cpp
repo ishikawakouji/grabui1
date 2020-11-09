@@ -75,6 +75,8 @@ void threadSave(const Pylon::CGrabResultPtr& ptrGrabResult) {
 	cv::Mat image(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC1, ptrGrabResult->GetBuffer());
 	cv::imwrite(buf, image);
 
+	Beep(500, 500);
+
 }
 
 /************************************/

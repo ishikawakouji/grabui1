@@ -254,6 +254,11 @@ int main()
             ImGui::Checkbox(u8"撮影", &flagCamera);
             ImGui::Checkbox(u8"保存", &flagSave);
 
+            if (ImGui::IsKeyReleased(ImGui::GetKeyIndex(ImGuiKey_Space))) {
+                //Beep(500, 500);
+                flagSave = true;
+            }
+
             // 照明点滅
             if (flagLight) {
                 if (!camera.IsGrabbing()) {
