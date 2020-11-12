@@ -163,6 +163,7 @@ int main()
 
     // カメラ
     int delayShutter = 50;
+    double exposureTime = camera.GetDoubleExposureTime();
 
     // 運転
     bool flagLight = false;
@@ -230,7 +231,7 @@ int main()
                 float min = (float)camera.GetDoubleGainMin();
                 float max = (float)camera.GetDoubleGainMax();
                 ImGui::SliderFloat("gain", &gain, min, max, "%.1f");
-                ImGui::InputFloat("", &gain, 0.1f, 0.5f, "%.1f");
+                ImGui::InputFloat("gain", &gain, 0.1f, 0.5f, "%.1f");
 
                 camera.SetDoubleGain((double)gain); //doubleGain.SetValue((double)gain);
             }
@@ -239,10 +240,17 @@ int main()
                 int min = (int)camera.GetIntGainMin();
                 int max = (int)camera.GetIntGainMax();
                 ImGui::SliderInt("gain", &gain, min, max);
-                ImGui::InputInt("", &gain);
+                ImGui::InputInt("gain", &gain);
 
                 camera.SetIntGain((int64_t)gain); //intGain.SetValue((int64_t)gain);
             }
+            
+            ImGui::Text(u8"露出時間");
+            ImGui::SameLine();
+            ImGui::InputDouble("micro sec", &exposureTime, 10.0, 100.0, "%.1f");
+            if (exposureTime < 0.0) { exposureTime = 10.0; }
+            camera.SetDoubleExposureTime(exposureTime);
+
             ImGui::Separator();
 
             // 撮影制御

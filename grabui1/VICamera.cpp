@@ -411,6 +411,16 @@ void VICamera::init()
 			intGainMax = intGain.GetMax();
 			intGainMin = intGain.GetMin();
 		}
+
+		// òIèoéûä‘
+		doubleExposureTime.Attach(camera.GetNodeMap().GetNode("ExposureTime"));
+		flagExposureTimeValid = doubleExposureTime.IsValid();
+
+		// dummy
+		//doubleExposureTime.SetValue(1000.0);
+		//double hoge = doubleExposureTime.GetValue();
+		//std::cout << hoge << std::endl;
+	
 	}
 	catch (const Pylon::GenericException& e)
 	{

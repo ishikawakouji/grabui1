@@ -88,6 +88,10 @@ private:
 	// B‰eŒp‘±ƒtƒ‰ƒO
 	bool flagGrabbing;
 
+	// ˜IoŠÔ‚Ìƒm[ƒh
+	Pylon::CFloatParameter doubleExposureTime;
+	bool flagExposureTimeValid;
+
 public:
 	bool IsGrabbing() {
 		return flagGrabbing;
@@ -108,6 +112,18 @@ public:
 
 	double GetDoubleGainMax() { return doubleGainMax; }
 	double GetDoubleGainMin() { return doubleGainMin; }
+
+	double GetDoubleExposureTime() {
+		if (flagExposureTimeValid) {
+			return doubleExposureTime.GetValue();
+		}
+		return 1000.0;
+	}
+	void SetDoubleExposureTime(double val) {
+		if (flagExposureTimeValid) {
+			doubleExposureTime.SetValue(val);
+		}
+	}
 
 private:
 	// •Û‘¶‚³‚ê‚½
