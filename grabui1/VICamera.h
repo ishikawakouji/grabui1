@@ -92,6 +92,9 @@ private:
 	Pylon::CFloatParameter doubleExposureTime;
 	bool flagExposureTimeValid;
 
+	// 255値になったピクセルの個数
+	int pixel255;
+
 public:
 	bool IsGrabbing() {
 		return flagGrabbing;
@@ -124,6 +127,10 @@ public:
 			doubleExposureTime.SetValue(val);
 		}
 	}
+
+	// 255の pixel の数
+	int GetPixel255() { return pixel255; }
+	void SetPixel255(int val) { pixel255 = val; }
 
 private:
 	// 保存された

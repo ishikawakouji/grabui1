@@ -255,8 +255,8 @@ int main()
 
             // 撮影制御
             ImGui::Text(u8"撮影");
-            ImGui::Text(u8"電源 %s %d\n照明間隔 %d ms / 点灯時間 %d ms / カメラ待ち %d ms / 露出時間 %.1f us\n点灯パタン [%s]\n消灯パタン [%s]",
-                ipAddr, ipPort, lightInterval, lightOnTime, delayShutter, exposureTime, onCommand, offCommand);
+            ImGui::Text(u8"電源 %s %d\n照明間隔 %d ms / 点灯時間 %d ms / カメラ待ち %d ms / 255個数 %d / 露出時間 %.1f us\n点灯パタン [%s]\n消灯パタン [%s]",
+                ipAddr, ipPort, lightInterval, lightOnTime, delayShutter, camera.GetPixel255(), exposureTime, onCommand, offCommand);
 
             ImGui::Checkbox(u8"照明", &flagLight);
             ImGui::Checkbox(u8"撮影", &flagCamera);

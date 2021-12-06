@@ -246,7 +246,7 @@ public:
 			std::cout << "SizeX: " << ptrGrabResult->GetWidth() << std::endl;
 			std::cout << "SizeY: " << ptrGrabResult->GetHeight() << std::endl;
 			const uint8_t* pImageBuffer = (uint8_t*)ptrGrabResult->GetBuffer();
-			std::cout << "Gray value of first pixel: " << (uint32_t)pImageBuffer[0] << std::endl;
+			//std::cout << "Gray value of first pixel: " << (uint32_t)pImageBuffer[0] << std::endl;
 			std::cout << std::endl;
 
 			Pylon::DisplayImage(1, ptrGrabResult);
@@ -258,6 +258,17 @@ public:
 				pCamera->ItSaved();
 			}
 
+			// 255のカウント
+			int pix = 0;
+			size_t size = ptrGrabResult->GetBufferSize();
+			//char* buf = (char*)ptrGrabResult->GetBuffer();
+			for (size_t i = 0; i < size; ++i) {
+				if (pImageBuffer[i] == 255) pix++;
+			}
+			pCamera->SetPixel255(pix);
+			std::cout << "buffer size: " << size << std::endl;
+			std::cout << "255 pixs: " << pix << std::endl;
+			std::cout << std::endl;
 		}
 		else
 		{
@@ -420,6 +431,9 @@ void VICamera::init()
 		//doubleExposureTime.SetValue(1000.0);
 		//double hoge = doubleExposureTime.GetValue();
 		//std::cout << hoge << std::endl;
+
+		// 255個数リセット
+		pixel255 = 0;
 	
 	}
 	catch (const Pylon::GenericException& e)
