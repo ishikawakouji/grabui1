@@ -247,16 +247,16 @@ int main()
             
             ImGui::Text(u8"露出時間");
             ImGui::SameLine();
-            ImGui::InputDouble("micro sec", &exposureTime, 10.0, 100.0, "%.1f");
-            if (exposureTime < 0.0) { exposureTime = 10.0; }
+            ImGui::InputDouble("micro sec", &exposureTime, 100.0, 1000.0, "%.1f", ImGuiInputTextFlags_EnterReturnsTrue); // リタンキーで有効
+            if (exposureTime < 0.0) { exposureTime = 100.0; }
             camera.SetDoubleExposureTime(exposureTime);
 
             ImGui::Separator();
 
             // 撮影制御
             ImGui::Text(u8"撮影");
-            ImGui::Text(u8"電源 %s %d\n照明間隔 %d ms / 点灯時間 %d ms / カメラ待ち %d ms\n点灯パタン [%s]\n消灯パタン [%s]",
-                ipAddr, ipPort, lightInterval, lightOnTime, delayShutter, onCommand, offCommand);
+            ImGui::Text(u8"電源 %s %d\n照明間隔 %d ms / 点灯時間 %d ms / カメラ待ち %d ms / 露出時間 %.1f us\n点灯パタン [%s]\n消灯パタン [%s]",
+                ipAddr, ipPort, lightInterval, lightOnTime, delayShutter, exposureTime, onCommand, offCommand);
 
             ImGui::Checkbox(u8"照明", &flagLight);
             ImGui::Checkbox(u8"撮影", &flagCamera);
