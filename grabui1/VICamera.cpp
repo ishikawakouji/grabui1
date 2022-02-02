@@ -32,11 +32,17 @@ void threadGrabbing(VICamera* camera)
 		// The grabbing is stopped, the device is closed and destroyed automatically when the camera object goes out of scope.
 		do
 		{
+			// このスレッドでの照明の状態
+			bool light = false;
+
 			// 照明間隔待ち
 			Sleep(lightInterval);
 
 			// 照明ON
-			camera->SendOn();
+			if (camera->IsLight()) {
+				light = true;
+				camera->SendOn();
+			}
 
 			// シャッター待ち
 			Sleep(delayShutterTime);
@@ -54,7 +60,10 @@ void threadGrabbing(VICamera* camera)
 			Sleep(lightOnTime);
 
 			// 照明OFF
-			camera->SendOff();
+			if (light) { // ローカルフラグで確実に消す
+				camera->SendOff();
+				light = false;
+			}
 
 		} while (camera->IsGrabbing());
 	}

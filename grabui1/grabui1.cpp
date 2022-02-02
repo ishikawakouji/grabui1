@@ -154,8 +154,15 @@ int main()
     // 照明
     int lightInterval = 1000;
     int lightOnTime = 100;
-    char  onCommand[16]("W12010999020999");
-    char offCommand[16]("W12010000020000");
+#if COMMAND_SIZE==40
+    char  onCommand[COMMAND_SIZE]("W11010255020255030255040255050255060255");
+    char offCommand[COMMAND_SIZE]("W11010000020000030000040000050000060000");
+#endif
+
+#if COMMAND_SIZE==16
+    char  onCommand[COMMAND_SIZE]("W12010999020999");
+    char offCommand[COMMAND_SIZE]("W12010000020000");
+#endif
     camera.SetCommand(onCommand, offCommand);
 
     camera.SetLightInterval(lightInterval);
@@ -232,6 +239,8 @@ int main()
                 float max = (float)camera.GetDoubleGainMax();
                 ImGui::SliderFloat("gain", &gain, min, max, "%.1f");
                 ImGui::InputFloat("gain", &gain, 0.1f, 0.5f, "%.1f");
+                if (gain < min) gain = min;
+                if (max < gain) gain = max;
 
                 camera.SetDoubleGain((double)gain); //doubleGain.SetValue((double)gain);
             }
@@ -241,6 +250,8 @@ int main()
                 int max = (int)camera.GetIntGainMax();
                 ImGui::SliderInt("gain", &gain, min, max);
                 ImGui::InputInt("gain", &gain);
+                if (gain < min) gain = min;
+                if (max < gain) gain = max;
 
                 camera.SetIntGain((int64_t)gain); //intGain.SetValue((int64_t)gain);
             }
@@ -248,7 +259,7 @@ int main()
             ImGui::Text(u8"露出時間");
             ImGui::SameLine();
             ImGui::InputDouble("micro sec", &exposureTime, 100.0, 1000.0, "%.1f", ImGuiInputTextFlags_EnterReturnsTrue); // リタンキーで有効
-            if (exposureTime < 0.0) { exposureTime = 100.0; }
+            if (exposureTime < 100.0) { exposureTime = 100.0; }
             camera.SetDoubleExposureTime(exposureTime);
 
             ImGui::Separator();
@@ -258,8 +269,8 @@ int main()
             ImGui::Text(u8"電源 %s %d\n照明間隔 %d ms / 点灯時間 %d ms / カメラ待ち %d ms / 255個数 %d / 露出時間 %.1f us\n点灯パタン [%s]\n消灯パタン [%s]",
                 ipAddr, ipPort, lightInterval, lightOnTime, delayShutter, camera.GetPixel255(), exposureTime, onCommand, offCommand);
 
-            ImGui::Checkbox(u8"照明", &flagLight);
             ImGui::Checkbox(u8"撮影", &flagCamera);
+            ImGui::Checkbox(u8"照明", &flagLight);
             ImGui::Checkbox(u8"保存", &flagSave);
 
             // 正確にチェックボックスに入れなくても保存する
@@ -269,8 +280,16 @@ int main()
                 flagSave = true;
             }
 
-            // 照明点滅
+            // 照明制御
             if (flagLight) {
+                camera.OnLight();
+            }
+            else {
+                camera.OffLight();
+            }
+
+            // とりあえず撮影
+            if (flagCamera) {
                 if (!camera.IsGrabbing()) {
                     camera.StartGrabbing(Pylon::GrabStrategy_OneByOne, Pylon::GrabLoop_ProvidedByInstantCamera);
                 }

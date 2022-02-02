@@ -139,6 +139,9 @@ private:
 	// B‰e‚·‚é
 	bool flagGrabMode = false;
 
+	// Æ–¾‚ğ‚Â‚¯‚é
+	bool flagLight = false;
+
 public:
 	// B‰e‚·‚é
 	void GoGrab(bool goGrab) {
@@ -163,6 +166,21 @@ public:
 	// •Û‘¶‚Å‚«‚½‚©‚Ç‚¤‚©
 	bool IsSaved() {
 		return flagSaved;
+	}
+
+	// Æ–¾‚ğ‚Â‚¯‚é
+	void OnLight() {
+		flagLight = true;
+	}
+
+	// Æ–¾‚ğÁ‚·
+	void OffLight() {
+		flagLight = false;
+	}
+
+	// Æ–¾‚Ìó‘Ô
+	bool IsLight() {
+		return flagLight;
 	}
 
 private:
@@ -196,7 +214,6 @@ private:
 	TcpSender power;
 
 	// power command
-#	define COMMAND_SIZE 16
 	char onCommand[COMMAND_SIZE];
 	char offCommand[COMMAND_SIZE];
 
