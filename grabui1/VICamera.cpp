@@ -3,6 +3,95 @@
 
 #include "opencv2/opencv.hpp"
 
+
+/**
+* 露出オーバーのカウント
+*/
+// 単純なカウント
+int count255(size_t size, const uint8_t* pImageBuffer) {
+	int pix = 0;
+	for (size_t i = 0; i < size; ++i) {
+		if (pImageBuffer[i] == 255) pix++;
+	}
+	return pix;
+}
+
+// 周囲を見て中央値が255になるものをカウント
+int count_median255(uint32_t width, uint32_t height, const uint8_t* pImageBuffer) {
+	int pix = 0;
+	
+	// GR のブロックを一度に見るので 2つずつ移動
+	// BG
+	for (uint32_t h = 2; h < height - 2; h+=2) {
+		for (uint32_t w = 2; 2 < width - 2; w+=2) {
+
+			// G1
+			int count = 0;
+			int G = width * h + width;
+			if (pImageBuffer[G - 2 * width    ] == 255) ++count;
+			if (pImageBuffer[G      -width + 1] == 255) ++count;
+			if (pImageBuffer[G      -width  -1] == 255) ++count;
+			if (pImageBuffer[G              -2] == 255) ++count;
+			if (pImageBuffer[G                ] == 255) ++count;
+			if (pImageBuffer[G              +2] == 255) ++count;
+			if (pImageBuffer[G      +width  -1] == 255) ++count;
+			if (pImageBuffer[G      +width  +1] == 255) ++count;
+			if (pImageBuffer[G + 2 * width    ] == 255) ++count;
+
+			if (count > 4) ++pix;
+
+			// R
+			count = 0;
+			int R = G + 1;
+			if (pImageBuffer[R - 2 * width    ] == 255) ++count;
+			if (pImageBuffer[R - 2 * width  -2] == 255) ++count;
+			if (pImageBuffer[R - 2 * width  +2] == 255) ++count;
+			if (pImageBuffer[R              -2] == 255) ++count;
+			if (pImageBuffer[R                ] == 255) ++count;
+			if (pImageBuffer[R              +2] == 255) ++count;
+			if (pImageBuffer[R + 2 * width  -2] == 255) ++count;
+			if (pImageBuffer[R + 2 * width  +2] == 255) ++count;
+			if (pImageBuffer[R + 2 * width    ] == 255) ++count;
+
+			if (count > 4) ++pix;
+
+			// B
+			count = 0;
+			int B = G + 2 * width;
+			if (pImageBuffer[B - 2 * width    ] == 255) ++count;
+			if (pImageBuffer[B - 2 * width  -2] == 255) ++count;
+			if (pImageBuffer[B - 2 * width  +2] == 255) ++count;
+			if (pImageBuffer[B              -2] == 255) ++count;
+			if (pImageBuffer[B                ] == 255) ++count;
+			if (pImageBuffer[B              +2] == 255) ++count;
+			if (pImageBuffer[B + 2 * width  -2] == 255) ++count;
+			if (pImageBuffer[B + 2 * width  +2] == 255) ++count;
+			if (pImageBuffer[B + 2 * width    ] == 255) ++count;
+
+			if (count > 4) ++pix;
+
+			// G2
+			count = 0;
+			G = B + 1;
+			if (pImageBuffer[G - 2 * width    ] == 255) ++count;
+			if (pImageBuffer[G      -width + 1] == 255) ++count;
+			if (pImageBuffer[G      -width  -1] == 255) ++count;
+			if (pImageBuffer[G              -2] == 255) ++count;
+			if (pImageBuffer[G                ] == 255) ++count;
+			if (pImageBuffer[G              +2] == 255) ++count;
+			if (pImageBuffer[G      +width  -1] == 255) ++count;
+			if (pImageBuffer[G      +width  +1] == 255) ++count;
+			if (pImageBuffer[G + 2 * width    ] == 255) ++count;
+
+			if (count > 4) ++pix;
+
+		} // width + 2
+	} // height + 2
+
+	return pix;
+}
+
+
 /*****************************
 * スレッド
 */
@@ -270,10 +359,20 @@ public:
 			// 255のカウント
 			int pix = 0;
 			size_t size = ptrGrabResult->GetBufferSize();
+#if 0
+			/*
 			//char* buf = (char*)ptrGrabResult->GetBuffer();
 			for (size_t i = 0; i < size; ++i) {
 				if (pImageBuffer[i] == 255) pix++;
 			}
+			*/
+			// 単純なカウント
+			pix = count255(size, pImageBuffer);
+#else
+			// 周囲9つを見てメジアンが255かどか
+			pix = count_median255(ptrGrabResult->GetWidth(), ptrGrabResult->GetHeight(), pImageBuffer);
+#endif
+
 			pCamera->SetPixel255(pix);
 			std::cout << "buffer size: " << size << std::endl;
 			std::cout << "255 pixs: " << pix << std::endl;
