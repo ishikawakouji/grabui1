@@ -156,6 +156,7 @@ int main()
     int lightOnTime = 100;
 #if COMMAND_SIZE==40
     char  onCommand[COMMAND_SIZE]("W11010255020255030255040255050255060255");
+//    char  onCommand[COMMAND_SIZE]("W11010010020010030010040010050010060010");
     char offCommand[COMMAND_SIZE]("W11010000020000030000040000050000060000");
 #endif
 
@@ -234,7 +235,7 @@ int main()
             ImGui::Text(u8"カメラ設定");
             //camera.DisplayGainSlider();
             if (camera.IsGainDouble()) {
-                float gain = (float)camera.GatDoubleGain(); //doubleGain.GetValue();
+                float gain = (float)camera.GetDoubleGain(); //doubleGain.GetValue();
                 float min = (float)camera.GetDoubleGainMin();
                 float max = (float)camera.GetDoubleGainMax();
                 ImGui::SliderFloat("gain", &gain, min, max, "%.1f");
@@ -291,11 +292,13 @@ int main()
             // とりあえず撮影
             if (flagCamera) {
                 if (!camera.IsGrabbing()) {
+                    printf("camera on\n");
                     camera.StartGrabbing(Pylon::GrabStrategy_OneByOne, Pylon::GrabLoop_ProvidedByInstantCamera);
                 }
             }
             else {
                 if (camera.IsGrabbing()) {
+                    printf("camera off\n");
                     camera.StopGrabbing();
                 }
             }

@@ -19,15 +19,15 @@ int count255(size_t size, const uint8_t* pImageBuffer) {
 // 周囲を見て中央値が255になるものをカウント
 int count_median255(uint32_t width, uint32_t height, const uint8_t* pImageBuffer) {
 	int pix = 0;
-	
+
 	// GR のブロックを一度に見るので 2つずつ移動
 	// BG
-	for (uint32_t h = 2; h < height - 2; h+=2) {
-		for (uint32_t w = 2; 2 < width - 2; w+=2) {
+	for (uint32_t h = 2; h < height - 2; h += 2) {
+		for (uint32_t w = 2; w < width - 2; w += 2) {
 
 			// G1
 			int count = 0;
-			int G = width * h + width;
+			int G = width * h + w;
 			if (pImageBuffer[G - 2 * width    ] == 255) ++count;
 			if (pImageBuffer[G      -width + 1] == 255) ++count;
 			if (pImageBuffer[G      -width  -1] == 255) ++count;
@@ -57,7 +57,7 @@ int count_median255(uint32_t width, uint32_t height, const uint8_t* pImageBuffer
 
 			// B
 			count = 0;
-			int B = G + 2 * width;
+			int B = G + width;
 			if (pImageBuffer[B - 2 * width    ] == 255) ++count;
 			if (pImageBuffer[B - 2 * width  -2] == 255) ++count;
 			if (pImageBuffer[B - 2 * width  +2] == 255) ++count;
@@ -161,17 +161,23 @@ void threadGrabbing(VICamera* camera)
 	camera->TcpClose();
 }
 
-// 保存スレッド
+// 保存スレッド用データ
+// いろいろ仕方なくグローバル
+char Gname_buffer[64];
+
 void threadSave(const Pylon::CGrabResultPtr& ptrGrabResult) {
+//void threadSave(struct saveData* data) {
 	// タイムスタンプでファイル名作成
+	/*
 	char buf[32];
 	SYSTEMTIME lt;
 	GetLocalTime(&lt);
 	sprintf_s(buf, 32, "%04d%02d%02d_%02d%02d%02d_%03d.png", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+	*/
 
 	//Pylon::CImagePersistence::Save(Pylon::EImageFileFormat::ImageFileFormat_Raw, buf, ptrGrabResult);
 	cv::Mat image(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC1, ptrGrabResult->GetBuffer());
-	cv::imwrite(buf, image);
+	cv::imwrite(Gname_buffer, image);
 
 	Beep(500, 500);
 
@@ -334,10 +340,10 @@ public:
 		// Image grabbed successfully?
 		if (ptrGrabResult->GrabSucceeded())
 		{
-			char buf[32];
+			char buf[64];
 			SYSTEMTIME lt;
 			GetLocalTime(&lt);
-			sprintf_s(buf, 32, "%04d%02d%02d_%02d%02d%02d_%03d", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+			sprintf_s(buf, 64, "%04d%02d%02d_%02d%02d%02d_%03d", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
 
 			std::cout << "Time: " << buf << std::endl;
 
@@ -349,8 +355,24 @@ public:
 
 			Pylon::DisplayImage(1, ptrGrabResult);
 
+			// ファイル名準備
+			if (pCamera->IsGainDouble()) {
+				sprintf_s(buf, 64, "%04d%02d%02d_%02d%02d%02d_%03d_G%3.1f_%dus.png",
+					lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds,
+					pCamera->GetDoubleGain(), (int)pCamera->GetDoubleExposureTime());
+			}
+			else {
+				sprintf_s(buf, 64, "%04d%02d%02d_%02d%02d%02d_%03d_G%3.1f_%dus.png",
+					lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds,
+					(float)pCamera->GetIntGain(), (int)pCamera->GetDoubleExposureTime());
+			}
+			//printf("filename (%s)\n", buf);
+
 			// 保存するか
 			if (!pCamera->IsSaved()) {
+				// グローバルにコピー
+				memcpy_s(Gname_buffer, 64, buf, 64);
+
 				std::thread th(threadSave, ptrGrabResult);
 				th.detach();
 				pCamera->ItSaved();
@@ -430,7 +452,8 @@ void VICamera::StartGrabbing(Pylon::EGrabStrategy strategy, Pylon::EGrabLoop gra
 
 	try {
 		// 照明
-		TcpConnect();
+		// 照明トグルをONにしたときに接続
+		//TcpConnect();
 
 		// カメラ
 		camera.StartGrabbing(Pylon::GrabStrategy_OneByOne, Pylon::GrabLoop_ProvidedByInstantCamera);

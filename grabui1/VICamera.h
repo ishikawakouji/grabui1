@@ -105,7 +105,7 @@ public:
 
 	// ƒQƒCƒ“‚Ì‚â‚è‚Æ‚è
 	int64_t GetIntGain() { return intGain.GetValue(); }
-	double GatDoubleGain() { return doubleGain.GetValue(); }
+	double GetDoubleGain() { return doubleGain.GetValue(); }
 
 	void SetIntGain(int64_t val) { intGain.SetValue(val); }
 	void SetDoubleGain(double val) { doubleGain.SetValue(val); }
@@ -170,11 +170,14 @@ public:
 
 	// Æ–¾‚ğ‚Â‚¯‚é
 	void OnLight() {
+		// TCP connect
+		TcpConnect();
 		flagLight = true;
 	}
 
 	// Æ–¾‚ğÁ‚·
 	void OffLight() {
+		TcpClose();
 		flagLight = false;
 	}
 
